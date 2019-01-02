@@ -562,6 +562,7 @@ ODM_SetTimer(
 
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 VOID
 ODM_InitializeTimer(
 	IN 	PDM_ODM_T			pDM_Odm,
@@ -584,7 +585,7 @@ ODM_InitializeTimer(
 	PlatformInitializeTimer(Adapter, pTimer, CallBackFunc,pContext,szID);
 #endif	
 }
-
+#endif
 
 VOID
 ODM_CancelTimer(

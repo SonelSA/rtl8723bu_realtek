@@ -32,6 +32,9 @@
 #include <linux/wifi_tiwlan.h>
 #endif
 #endif /* defined(RTW_ENABLE_WIFI_CONTROL_FUNC) */
+#ifndef is_compat_task
+#define is_compat_task() 0
+#endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
 #define strnicmp	strncasecmp

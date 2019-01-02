@@ -895,12 +895,14 @@ unsigned int rtw_classify8021d(struct sk_buff *skb)
 
  
 static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0) 	
-				, void *accel_priv
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0) 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
+			    ,struct net_device *sb_dev
 				, select_queue_fallback_t fallback
-#endif
-
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
+ 			    ,void *unused
+                             ,select_queue_fallback_t fallback
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
+			, void *accel_priv
 #endif
 )
 {
@@ -1816,7 +1818,11 @@ void rtw_cancel_all_timer(_adapter *padapter)
 	rtw_hal_sw_led_deinit(padapter);
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("rtw_cancel_all_timer:cancel DeInitSwLeds! \n"));
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_cancel_timer_ex(&(adapter_to_pwrctl(padapter)->pwr_state_check_timer));
+#else
+	_cancel_timer_ex(&padapter->pwr_state_check_timer);
+#endif
 
 #ifdef CONFIG_IOCTL_CFG80211
 #ifdef CONFIG_P2P
@@ -2765,7 +2771,11 @@ int _netdev_open(struct net_device *pnetdev)
 	_set_timer(&padapter->mlmepriv.dynamic_chk_timer, 2000);
 
 #ifndef CONFIG_IPS_CHECK_IN_WD
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_set_pwr_state_check_timer(pwrctrlpriv);
+#else
+	rtw_set_pwr_state_check_timer(padapter);
+#endif
 #endif 
 
 	//netif_carrier_on(pnetdev);//call this func when rtw_joinbss_event_callback return success
@@ -2862,7 +2872,11 @@ int  ips_netdrv_open(_adapter *padapter)
 	}
 
 #ifndef CONFIG_IPS_CHECK_IN_WD
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_set_pwr_state_check_timer(adapter_to_pwrctl(padapter));
+#else
+	rtw_set_pwr_state_check_timer(padapter);
+#endif
 #endif		
   	_set_timer(&padapter->mlmepriv.dynamic_chk_timer,2000);
 

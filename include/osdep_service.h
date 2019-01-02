@@ -38,6 +38,10 @@
 #endif
 
 #ifdef PLATFORM_LINUX
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/signal.h>
+#endif
 #include <osdep_service_linux.h>
 #endif
 
@@ -47,6 +51,12 @@
 
 #ifdef PLATFORM_OS_CE
 #include <osdep_service_ce.h>
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void rtw_signal_stat_timer_hdl(struct timer_list *t);
+#else
+void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS);
 #endif
 
 #define RTW_TIMER_HDL_NAME(name) rtw_##name##_timer_hdl
@@ -315,8 +325,9 @@ extern void	rtw_udelay_os(int us);
 extern void rtw_yield_os(void);
 
 
-extern void rtw_init_timer(_timer *ptimer, void *padapter, void *pfunc);
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+void rtw_init_timer(_timer *ptimer, void *padapter, void *pfunc);
+#endif
 
 __inline static unsigned char _cancel_timer_ex(_timer *ptimer)
 {

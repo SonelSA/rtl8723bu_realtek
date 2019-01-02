@@ -366,8 +366,10 @@ struct pwrctrl_priv
 	pno_ssid_list_t	*pno_ssid_list;
 #endif /* CONFIG_PNO_SUPPORT */
 #endif /* CONFIG_WOWLAN */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_timer 	pwr_state_check_timer;
 	int		pwr_state_check_interval;
+#endif
 	u8		pwr_state_check_cnts;
 
 	int 		ps_flag; /* used by autosuspend */

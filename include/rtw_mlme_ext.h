@@ -1014,7 +1014,7 @@ void rtw_dev_iface_status_no_self(_adapter *adapter, u8 *sta_num, u8 *ld_sta_num
 
 struct cmd_hdl {
 	uint	parmsize;
-	u8 (*h2cfuns)(struct _ADAPTER *padapter, u8 *pbuf);	
+	u8 (*h2cfuns)(struct adapter *padapter, u8 *pbuf);
 };
 
 

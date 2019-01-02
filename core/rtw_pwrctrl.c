@@ -420,16 +420,28 @@ void rtw_ps_processor(_adapter*padapter)
 	}
 exit:
 #ifndef CONFIG_IPS_CHECK_IN_WD
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_set_pwr_state_check_timer(pwrpriv);
+#else
+	rtw_set_pwr_state_check_timer(padapter);
+#endif
 #endif
 	pwrpriv->ps_processing = _FALSE;
 	return;
 }
 
-void pwr_state_check_handler(RTW_TIMER_HDL_ARGS);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void pwr_state_check_handler(RTW_TIMER_HDL_ARGS)
+#else
+void pwr_state_check_handler(struct timer_list *t)
+#endif
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_adapter *padapter = (_adapter *)FunctionContext;
+#else
+	_adapter *padapter = from_timer(padapter, t, pwr_state_check_timer);
+#endif
+
 	rtw_ps_cmd(padapter);
 }
 
@@ -2115,7 +2127,11 @@ _func_enter_;
 	pwrctrlpriv->ips_mode = padapter->registrypriv.ips_mode;
 	pwrctrlpriv->ips_mode_req = padapter->registrypriv.ips_mode;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	pwrctrlpriv->pwr_state_check_interval = RTW_PWR_STATE_CHK_INTERVAL;
+#else
+	padapter->pwr_state_check_interval = RTW_PWR_STATE_CHK_INTERVAL;
+#endif
 	pwrctrlpriv->pwr_state_check_cnts = 0;
 	pwrctrlpriv->bInternalAutoSuspend = _FALSE;
 	pwrctrlpriv->bInSuspend = _FALSE;
@@ -2159,8 +2175,11 @@ _func_enter_;
 #endif // CONFIG_LPS_RPWM_TIMER
 #endif // CONFIG_LPS_LCLK
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_init_timer(&pwrctrlpriv->pwr_state_check_timer, padapter, pwr_state_check_handler);
-
+#else
+	timer_setup(&padapter->pwr_state_check_timer, pwr_state_check_handler, 0);
+#endif
 	pwrctrlpriv->wowlan_mode = _FALSE;
 	pwrctrlpriv->wowlan_ap_mode = _FALSE;
 	pwrctrlpriv->wowlan_p2p_mode = _FALSE;

@@ -597,7 +597,11 @@ static u8 _is_btfwver_valid(PBTC_COEXIST pBtCoexist, u16 btfwver)
 	return _TRUE;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 static void _btmpoper_timer_hdl(void *p)
+#else
+static void _btmpoper_timer_hdl (struct timer_list *t)
+#endif
 {
 	if (GLBtcBtMpRptWait) {
 		GLBtcBtMpRptWait = 0;
@@ -2196,7 +2200,11 @@ u8 EXhalbtcoutsrc_InitlizeVariables(void *padapter)
 	/* BT Control H2C/C2H*/
 	GLBtcBtMpOperSeq = 0;
 	_rtw_mutex_init(&GLBtcBtMpOperLock);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_init_timer(&GLBtcBtMpOperTimer, ((PADAPTER)padapter)->pnetdev, _btmpoper_timer_hdl, pBtCoexist);
+#else
+	timer_setup(&GLBtcBtMpOperTimer, _btmpoper_timer_hdl, 0);
+#endif
 	_rtw_init_sema(&GLBtcBtMpRptSema, 0);
 	GLBtcBtMpRptSeq = 0;
 	GLBtcBtMpRptStatus = 0;

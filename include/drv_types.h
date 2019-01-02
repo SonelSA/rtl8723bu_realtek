@@ -60,7 +60,7 @@ enum _NIC_VERSION {
 
 };
 
-typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
+typedef struct adapter _adapter, ADAPTER,*PADAPTER;
 
 #include <rtw_debug.h>
 #include <rtw_rf.h>
@@ -941,7 +941,11 @@ typedef struct loopbackdata
 }LOOPBACKDATA, *PLOOPBACKDATA;
 #endif
 
-struct _ADAPTER{
+struct adapter{
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_timer	pwr_state_check_timer;
+	int pwr_state_check_interval;
+#endif
 	int	DriverState;// for disable driver using module, use dongle to replace module.
 	int	pid[3];//process id from UI, 0:wps, 1:hostapd, 2:dhcpcd
 	int	bDongle;//build-in module or external dongle
@@ -1198,8 +1202,8 @@ struct _ADAPTER{
 
 #define adapter_mac_addr(adapter) (adapter->mac_addr)
 
-#define mlme_to_adapter(mlme) container_of((mlme), struct _ADAPTER, mlmepriv)
-#define tdls_info_to_adapter(tdls) container_of((tdls), struct _ADAPTER, tdlsinfo)
+#define mlme_to_adapter(mlme) container_of((mlme), struct adapter, mlmepriv)
+#define tdls_info_to_adapter(tdls) container_of((tdls), struct adapter, tdlsinfo)
 
 #define rtw_get_chip_type(adapter) (((PADAPTER)adapter)->dvobj->chip_type)
 #define rtw_get_hw_type(adapter) (((PADAPTER)adapter)->dvobj->HardwareType)
