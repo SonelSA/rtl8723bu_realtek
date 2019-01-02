@@ -6,17 +6,16 @@ The device is an USB dongle for WiFi and Bluetooth connectivity.
 
 ## Realtek driver
 
-Realtek provides a driver, but it cannot be downloaded from their site
-[Realtek].
+Realtek provides a driver, but it cannot be downloaded from their [site][Realtek].
 
-The newest driver we found on the net comes from [lm811].
+The newest driver we found on the net comes from [lm811][lm811].
 It can be extracted from LM817_WIFI_BT_LINUX_v4.4.5_RTL8723BU.zip
 This is the version this repository uses as starting point.
 Unfortunately it does not compile on newer kernels (4.15 and later).
 
 ## lwfinger driver
 
-There is a github repository maintained by independent developers [lwfinger].
+There is a github repository maintained by [independent developers][lwfinger].
 The code there is based on some older Realtek driver.
 Changes to the original driver include:
 - compilation with newer kernel versions,
@@ -60,8 +59,8 @@ random.
 
 ## This driver.
 
-This driver is based on the latest available [Realtek] driver.
-The compilation patches for newer kernels are stolen from [lwfinger].
+This driver is based on the latest available [Realtek driver][lm811].
+The compilation patches for newer kernels are stolen from [lwfinger][lwfinger].
 
 ### Tests
 
@@ -74,16 +73,32 @@ Both WiFi and Bluetooth work, but workaround is needed for NetworkManager.
 
 When a WiFi connection is started with NetworkManager, connection fails and
 NetworkManager asks for password again, as if the password was wrong. Workaround
-is taken from [nm_workaround_thread].
+is taken from [this forum thread][nm_workaround_thread].
 ```
 echo "" >> /etc/NetworkManager/NetworkManager.conf
 echo "[device]" >> /etc/NetworkManager/NetworkManager.conf
 echo "wifi.scan-rand-mac-address=no" >> /etc/NetworkManager/NetworkManager.conf
 ```
 
+#### Prevent rtl8xxxu from being loaded
+rtl8xxxu could try to take over control over our device.
+To prevent this use following command.
+```
+echo "blacklist rtl8xxxu" >> /etc/modprobe.d/8723bu.conf
+```
+
 ## Links
 
-[Realtek](https://www.realtek.com/en/products/communications-network-ics/item/rtl8723bu)
-[lm811](https://www.lm-technologies.com/product/wifi-and-bluetooth-usb-module-4-0-dual-mode-class-1-lm811/)
-[lwfinger](https://github.com/lwfinger/rtl8723bu)
-[nm_workaround_thread](https://github.com/diederikdehaas/rtl8812AU/issues/71)
+[Device page at Realtek][Realtek]
+
+[LM Technologies][lm811]
+
+[lwfinger fork on github][lwfinger]
+
+[NetworkManager workaround][nm_workaround_thread]
+
+
+[Realtek]: https://www.realtek.com/en/products/communications-network-ics/item/rtl8723bu
+[lm811]: https://www.lm-technologies.com/product/wifi-and-bluetooth-usb-module-4-0-dual-mode-class-1-lm811/
+[lwfinger]: https://github.com/lwfinger/rtl8723bu
+[nm_workaround_thread]: https://github.com/diederikdehaas/rtl8812AU/issues/71
