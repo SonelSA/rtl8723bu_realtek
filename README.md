@@ -75,9 +75,9 @@ When a WiFi connection is started with NetworkManager, connection fails and
 NetworkManager asks for password again, as if the password was wrong. Workaround
 is taken from [this forum thread][nm_workaround_thread].
 ```
-echo "[device-8723bu]" > ${D}/etc/NetworkManager/conf.d/8723bu.conf
-echo "match-device=driver:rtl8723bu" >> ${D}/etc/NetworkManager/conf.d/8723bu.conf
-echo "wifi.scan-rand-mac-address=no" >> ${D}/etc/NetworkManager/conf.d/8723bu.conf
+echo "[device-8723bu]" > /etc/NetworkManager/conf.d/8723bu.conf
+echo "match-device=driver:rtl8723bu" >> /etc/NetworkManager/conf.d/8723bu.conf
+echo "wifi.scan-rand-mac-address=no" >> /etc/NetworkManager/conf.d/8723bu.conf
 ```
 
 #### Prevent rtl8xxxu from being loaded
