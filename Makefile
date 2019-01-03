@@ -1620,6 +1620,11 @@ ifneq ($(USER_MODULE_NAME),)
 MODULE_NAME := $(USER_MODULE_NAME)
 endif
 
+# override KSRC if KERNEL_SRC is set
+ifneq ($(KERNEL_SRC),)
+  KSRC := $(KERNEL_SRC)
+endif
+
 ifneq ($(KERNELRELEASE),)
 
 rtk_core :=	core/rtw_cmd.o \
@@ -1685,6 +1690,9 @@ strip:
 install:
 	install -p -m 644 $(MODULE_NAME).ko  $(MODDESTDIR)
 	/sbin/depmod -a ${KVER}
+
+modules_install:
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) modules_install
 
 uninstall:
 	rm -f $(MODDESTDIR)/$(MODULE_NAME).ko
