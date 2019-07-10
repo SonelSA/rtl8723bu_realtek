@@ -330,7 +330,11 @@ static const struct ieee80211_txrx_stypes
 
 static u64 rtw_get_systime_us(void)
 {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 39))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0))
+	ktime_t ts;
+	ts = ktime_get_boottime();
+	return do_div(ts, 1000);	
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 39))
 	struct timespec ts;
 	get_monotonic_boottime(&ts);
 	return ((u64)ts.tv_sec * 1000000) + ts.tv_nsec / 1000;
@@ -4432,8 +4436,14 @@ struct sta_info *rtw_sta_info_get_by_idx(const int idx, struct sta_priv *pstapri
 	return psta;
 }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0)) || \
+    (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
 static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *ndev,
 		int idx, u8 *mac, struct station_info *sinfo)
+#else
+static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *ndev,
+			       int idx, const u8 *mac, struct station_info *sinfo)
+#endif
 {
 
 	int ret = 0;

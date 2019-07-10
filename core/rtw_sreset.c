@@ -269,7 +269,11 @@ void sreset_stop_adapter(_adapter *padapter)
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING)) {
 		rtw_set_to_roam(padapter, 0);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+		rtw_join_timeout_handler(&padapter->mlmepriv.assoc_timer);
+#else
 		rtw_join_timeout_handler(padapter);
+#endif
 	}
 
 }

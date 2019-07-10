@@ -1460,11 +1460,20 @@ void init_mlme_ext_timer(_adapter *padapter)
 {
 	struct	mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+    timer_setup(&pmlmeext->survey_timer, survey_timer_hdl, 0);
+    timer_setup(&pmlmeext->link_timer, link_timer_hdl, 0);
+#ifdef CONFIG_RTW_80211R
+	timer_setup(&pmlmeext->ft_link_timer, ft_link_timer_hdl, 0);
+	timer_setup(&pmlmeext->ft_roam_timer, ft_roam_timer_hdl, 0);
+#endif
+#else
 	rtw_init_timer(&pmlmeext->survey_timer, padapter, survey_timer_hdl, padapter);
 	rtw_init_timer(&pmlmeext->link_timer, padapter, link_timer_hdl, padapter);
 #ifdef CONFIG_RTW_80211R
 	rtw_init_timer(&pmlmeext->ft_link_timer, padapter, ft_link_timer_hdl, padapter);
 	rtw_init_timer(&pmlmeext->ft_roam_timer, padapter, ft_roam_timer_hdl, padapter);
+#endif
 #endif
 
 #ifdef CONFIG_RTW_REPEATER_SON
@@ -12592,9 +12601,17 @@ bypass_active_keep_alive:
 
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void survey_timer_hdl(struct timer_list *t)
+#else
 void survey_timer_hdl(void *ctx)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_adapter *padapter = from_timer(padapter, t, mlmeextpriv.survey_timer);
+#else
 	_adapter *padapter = (_adapter *)ctx;
+#endif
 	struct cmd_obj *cmd;
 	struct sitesurvey_parm *psurveyPara;
 	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
@@ -12627,18 +12644,34 @@ exit:
 
 #ifdef CONFIG_RTW_REPEATER_SON
 /*	 100ms pass, stop rson_scan	*/
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void rson_timer_hdl(struct timer_list *t)
+#else
 void rson_timer_hdl(void *ctx)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_adapter *padapter = from_timer(padapter, t, mlmeextpriv.rson_timer);
+#else
 	_adapter *padapter = (_adapter *)ctx;
+#endif
 
 	rtw_rson_scan_wk_cmd(padapter, RSON_SCAN_DISABLE);
 }
 
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void link_timer_hdl(struct timer_list *t)
+#else
 void link_timer_hdl(void *ctx)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_adapter *padapter = from_timer(padapter, t, mlmeextpriv.link_timer);
+#else
 	_adapter *padapter = (_adapter *)ctx;
+#endif
 	/* static unsigned int		rx_pkt = 0; */
 	/* static u64				tx_cnt = 0; */
 	/* struct xmit_priv		*pxmitpriv = &(padapter->xmitpriv); */
@@ -12710,9 +12743,17 @@ void link_timer_hdl(void *ctx)
 	return;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void addba_timer_hdl(struct timer_list *t)
+#else
 void addba_timer_hdl(void *ctx)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	struct sta_info *psta = from_timer(psta, t, addba_retry_timer);
+#else
 	struct sta_info *psta = (struct sta_info *)ctx;
+#endif
 
 #ifdef CONFIG_80211N_HT
 	struct ht_priv	*phtpriv;
@@ -12798,9 +12839,17 @@ void clnt_sa_query_timeout(_adapter *padapter)
 	RTW_INFO("SA query timeout client disconnect\n");
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void sa_query_timer_hdl(struct timer_list *t)
+#else
 void sa_query_timer_hdl(void *ctx)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	struct sta_info *psta = from_timer(psta, t, mlmeextpriv.sa_query_timer);
+#else
 	struct sta_info *psta = (struct sta_info *)ctx;
+#endif
 	_adapter *padapter = psta->padapter;
 	_irqL irqL;
 	struct sta_priv *pstapriv = &padapter->stapriv;

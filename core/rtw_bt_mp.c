@@ -22,7 +22,11 @@
 #endif
 
 #if defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8821A)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void MPh2c_timeout_handle(void *FunctionContext)
+#else
+void MPh2c_timeout_handle(struct timer_list *t)
+#endif
 {
 	PADAPTER pAdapter;
 	PMPT_CONTEXT pMptCtx;
@@ -30,7 +34,11 @@ void MPh2c_timeout_handle(void *FunctionContext)
 
 	RTW_INFO("[MPT], MPh2c_timeout_handle\n");
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	pAdapter = (PADAPTER)FunctionContext;
+#else
+	pAdapter = from_timer(pAdapter, t, cfg80211_wdinfo.remain_on_ch_timer);
+#endif
 	pMptCtx = &pAdapter->mppriv.mpt_ctx;
 
 	pMptCtx->bMPh2c_timeout = _TRUE;
