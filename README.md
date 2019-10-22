@@ -8,10 +8,13 @@ The device is an USB dongle for WiFi and Bluetooth connectivity.
 
 Realtek provides a driver, but it cannot be downloaded from their [site][Realtek].
 
-The newest driver we found on the net comes from [lm811][lm811].
+We found a driver here [lm811][lm811].
 It can be extracted from LM817_WIFI_BT_LINUX_v4.4.5_RTL8723BU.zip
 This is the version this repository uses as starting point.
 Unfortunately it does not compile on newer kernels (4.15 and later).
+
+A newer driver v5.2.17.1 can be downloaded from here
+[thisiswangle][thisiswangle] or here [edimax][edimax].
 
 ## lwfinger driver
 
@@ -60,7 +63,11 @@ random.
 ## This driver.
 
 This driver is based on the latest available [Realtek driver][lm811].
+
 The compilation patches for newer kernels are stolen from [lwfinger][lwfinger].
+
+Later an attempt was done to update to version from here [thisiswangle][thisiswangle],
+but it currently does not yet compile.
 
 ### Tests
 
@@ -91,7 +98,11 @@ echo "blacklist rtl8xxxu" >> /etc/modprobe.d/8723bu.conf
 
 [Device page at Realtek][Realtek]
 
-[LM Technologies][lm811]
+[v4.4.5 at LM Technologies page][lm811]
+
+[v5.2.17.1 from thisiswangle on github][thisiswangle]
+
+[v5.2.17.1 at Edimax page][edimax]
 
 [lwfinger fork on github][lwfinger]
 
@@ -100,5 +111,7 @@ echo "blacklist rtl8xxxu" >> /etc/modprobe.d/8723bu.conf
 
 [Realtek]: https://www.realtek.com/en/products/communications-network-ics/item/rtl8723bu
 [lm811]: https://www.lm-technologies.com/product/wifi-and-bluetooth-usb-module-4-0-dual-mode-class-1-lm811/
+[thisiswangle]: https://github.com/thisiswangle/WGD-rtl8723bu
+[edimax]: https://www.edimax.com/edimax/download/download/data/edimax/global/download/for_home/wireless_adapters/wireless_adapters_n150/ew-7611ulb
 [lwfinger]: https://github.com/lwfinger/rtl8723bu
 [nm_workaround_thread]: https://github.com/diederikdehaas/rtl8812AU/issues/71
