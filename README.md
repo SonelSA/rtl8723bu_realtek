@@ -66,8 +66,8 @@ This driver is based on the latest available [Realtek driver][lm811].
 
 The compilation patches for newer kernels are stolen from [lwfinger][lwfinger].
 
-Later an attempt was done to update to version from here [thisiswangle][thisiswangle],
-but it currently does not yet compile.
+Later an attempt was done to update to version from here [thisiswangle][thisiswangle].
+It does compile with kernels up to 5.2, but was not tested.
 
 ### Tests
 
