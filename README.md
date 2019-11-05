@@ -62,17 +62,29 @@ random.
 
 ## This driver.
 
-This driver is based on the latest available [Realtek driver][lm811].
+This driver was based on the latest available [Realtek driver][lm811].
+Later it was updated to version v5.2.17.1 from here [thisiswangle][thisiswangle].
 
 The compilation patches for newer kernels are stolen from [lwfinger][lwfinger].
 
-Later an attempt was done to update to version from here [thisiswangle][thisiswangle].
-It does compile with kernels up to 5.2, but was not tested.
-
 ### Tests
 
-This driver was tested on x86_64 (debian buster 4.18.20-2).
-Both WiFi and Bluetooth work, but workaround is needed for NetworkManager.
+It does compile with kernels up to 5.2 and was tested on x86_64 Debian
+Testing on 2019-11-05, kernel 5.2.17-1.
+
+Basic tests confirmed both WiFi and Bluetooth to work.
+Workarounds needed for lwfinger driver are not needed.
+Workarounds described below are needed instead.
+
+### Manual install
+
+Run the following commands in the Linux terminal.
+
+```
+make
+sudo make install
+sudo modprobe -v 8723bu
+```
 
 ### Workarounds.
 
