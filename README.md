@@ -117,6 +117,18 @@ echo "options 8723bu rtw_drv_log_level=3" >> /etc/modprobe.d/8723bu.conf
 Default log level is 4.
 The lower level is chosen the less messages will be printed.
 
+## Other drivers
+
+More drivers can be found on the net.
+
+### ulli-kroll
+
+Based on v4.4.5. WiFi only, not evaluated. [ulli-kroll]
+
+### johnheenan
+
+Patch to generic kernel driver rtl8xxxu. Not evaluated. [johnheenan]
+
 ## Links
 
 [Device page at Realtek][Realtek]
@@ -131,6 +143,9 @@ The lower level is chosen the less messages will be printed.
 
 [NetworkManager workaround][nm_workaround_thread]
 
+[ulli-kroll fork on github][ulli-kroll]
+
+[johnheenan patch on github][johnheenan]
 
 [Realtek]: https://www.realtek.com/en/products/communications-network-ics/item/rtl8723bu
 [lm811]: https://www.lm-technologies.com/product/wifi-and-bluetooth-usb-module-4-0-dual-mode-class-1-lm811/
@@ -138,3 +153,5 @@ The lower level is chosen the less messages will be printed.
 [edimax]: https://www.edimax.com/edimax/download/download/data/edimax/global/download/for_home/wireless_adapters/wireless_adapters_n150/ew-7611ulb
 [lwfinger]: https://github.com/lwfinger/rtl8723bu
 [nm_workaround_thread]: https://github.com/diederikdehaas/rtl8812AU/issues/71
+[ulli-kroll]: https://github.com/ulli-kroll/rtl8723bu
+[johnheenan]: https://github.com/johnheenan/rtl8xxxu
