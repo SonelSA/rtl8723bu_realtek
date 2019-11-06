@@ -48,7 +48,7 @@ or scan for new networks (there is a workaround, but not reliable)
 It seems that power management for WiFi is affecting Bluetooth.
 The power saving can be disabled with:
 ```
-echo "options 8723bu rtw_power_mgnt=0 rtw_ips_mode=0 rtw_smart_ps=0" > ${D}/etc/modprobe.d/8723bu.conf
+echo "options 8723bu rtw_power_mgnt=0 rtw_ips_mode=0 rtw_smart_ps=0" > /etc/modprobe.d/8723bu.conf
 ```
 
 #### Device not operable after disconnection.
@@ -105,6 +105,17 @@ To prevent this use following command.
 ```
 echo "blacklist rtl8xxxu" >> /etc/modprobe.d/8723bu.conf
 ```
+
+#### Noisy dmesg
+
+By default the driver prints lots of debug messages to the kernel log,
+which can be annoying and can grow log files uncontrollably.
+To reduce the load use following commands:
+```
+echo "options 8723bu rtw_drv_log_level=3" >> /etc/modprobe.d/8723bu.conf
+```
+Default log level is 4.
+The lower level is chosen the less messages will be printed.
 
 ## Links
 
