@@ -100,10 +100,24 @@ echo "wifi.scan-rand-mac-address=no" >> /etc/NetworkManager/conf.d/8723bu.conf
 ```
 
 #### Prevent rtl8xxxu from being loaded
+
 rtl8xxxu could try to take over control over our device.
 To prevent this use following command.
 ```
 echo "blacklist rtl8xxxu" >> /etc/modprobe.d/8723bu.conf
+```
+
+#### Bluetooth and power management.
+
+Power management for WiFi is still affecting Bluetooth.
+It was tested that Bluetooth will allow for scanning and pairing,
+but will not allow to make a RFCOMM connection from external device,
+if WiFi is not enabled.
+Situation can be sligthly improved with options below.
+WiFi will still have to be enabled at least for a moment after module is loaded,
+but WiFi can be disabled later and Bluetooth connection will still be possible.
+```
+echo "options 8723bu rtw_ips_mode=0" > /etc/modprobe.d/8723bu.conf
 ```
 
 #### Noisy dmesg
