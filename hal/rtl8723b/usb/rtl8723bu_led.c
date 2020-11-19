@@ -45,6 +45,45 @@ SwLedOn_8723BU(
 	if (RTW_CANNOT_RUN(padapter))
 		return;
 
+	if (RT_GetInterfaceSelection(padapter) == INTF_SEL2_MINICARD ||
+	    RT_GetInterfaceSelection(padapter) == INTF_SEL3_USB_Solo ||
+	    RT_GetInterfaceSelection(padapter) == INTF_SEL4_USB_Combo) {
+		LedCfg = rtw_read8(padapter, REG_LEDCFG2);
+		switch (pLed->LedPin) {
+		case LED_PIN_GPIO0:
+			break;
+
+		case LED_PIN_LED0:
+
+			LedCfg = rtw_read8(padapter, REG_LEDCFG2);
+			rtw_write8(padapter, REG_LEDCFG2, (LedCfg & 0xf0) | BIT5 | BIT6); /* SW control led0 on. */
+			break;
+
+		case LED_PIN_LED1:
+			rtw_write8(padapter, REG_LEDCFG2, (LedCfg & 0x0f) | BIT5); /* SW control led1 on. */
+			break;
+
+		default:
+			break;
+
+		}
+	} else {
+		switch (pLed->LedPin) {
+		case LED_PIN_GPIO0:
+			break;
+
+		case LED_PIN_LED0:
+		case LED_PIN_LED1:
+		case LED_PIN_LED2:
+			LedCfg = rtw_read8(padapter, REG_LEDCFG2) & 0x20;
+			rtw_write8(padapter, REG_LEDCFG2, (LedCfg & ~(BIT3)) | BIT5); /* SW control led2 on. */
+
+			break;
+
+		default:
+			break;
+		}
+	}
 	pLed->bLedOn = _TRUE;
 
 }
@@ -62,11 +101,59 @@ SwLedOff_8723BU(
 {
 	u8	LedCfg;
 	/* HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter); */
+	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
 	if (RTW_CANNOT_RUN(padapter))
-		goto exit;
+		//goto exit;
+		return;
 
-exit:
+//exit:
+	if (RT_GetInterfaceSelection(padapter) == INTF_SEL2_MINICARD ||
+	    RT_GetInterfaceSelection(padapter) == INTF_SEL3_USB_Solo ||
+	    RT_GetInterfaceSelection(padapter) == INTF_SEL4_USB_Combo) {
+		LedCfg = rtw_read8(padapter, REG_LEDCFG2);
+		switch (pLed->LedPin) {
+		case LED_PIN_GPIO0:
+			break;
+
+		case LED_PIN_LED0:
+			if (pHalData->bLedOpenDrain == _TRUE) {
+				LedCfg &= 0x90; /* Set to software control. */
+				rtw_write8(padapter, REG_LEDCFG2, (LedCfg | BIT3));
+				LedCfg = rtw_read8(padapter, REG_MAC_PINMUX_CFG);
+				LedCfg &= 0xFE;
+				rtw_write8(padapter, REG_MAC_PINMUX_CFG, LedCfg);
+			} else
+				rtw_write8(padapter, REG_LEDCFG2, (LedCfg | BIT3 | BIT5 | BIT6));
+			break;
+
+		case LED_PIN_LED1:
+			LedCfg &= 0x0f; /* Set to software control. */
+			rtw_write8(padapter, REG_LEDCFG2, (LedCfg | BIT3));
+			break;
+
+		default:
+			break;
+
+		}
+	} else {
+		switch (pLed->LedPin) {
+		case LED_PIN_GPIO0:
+			break;
+
+		case LED_PIN_LED0:
+		case LED_PIN_LED1:
+		case LED_PIN_LED2:
+			LedCfg = rtw_read8(padapter, REG_LEDCFG2);
+			LedCfg &= 0x20; /* Set to software control. */
+			rtw_write8(padapter, REG_LEDCFG2, (LedCfg | BIT3 | BIT5));
+
+			break;
+
+		default:
+			break;
+		}
+	}
 	pLed->bLedOn = _FALSE;
 
 }
@@ -88,7 +175,7 @@ rtl8723bu_InitSwLeds(
 	_adapter	*padapter
 )
 {
-	struct led_priv *pledpriv = &(padapter->ledpriv);
+	struct led_priv *pledpriv = adapter_to_led(padapter);
 
 	pledpriv->LedControlHandler = LedControlUSB;
 
@@ -96,8 +183,8 @@ rtl8723bu_InitSwLeds(
 	pledpriv->SwLedOff = SwLedOff_8723BU;
 
 	InitLed(padapter, &(pledpriv->SwLed0), LED_PIN_LED0);
-
 	InitLed(padapter, &(pledpriv->SwLed1), LED_PIN_LED1);
+	InitLed(padapter, &(pledpriv->SwLed2), LED_PIN_LED2);
 }
 
 
@@ -110,7 +197,7 @@ rtl8723bu_DeInitSwLeds(
 	_adapter	*padapter
 )
 {
-	struct led_priv	*ledpriv = &(padapter->ledpriv);
+	struct led_priv	*ledpriv = adapter_to_led(padapter);
 
 	DeInitLed(&(ledpriv->SwLed0));
 	DeInitLed(&(ledpriv->SwLed1));
